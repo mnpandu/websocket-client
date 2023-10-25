@@ -1,20 +1,13 @@
-var notificationCount = 0;
+var globalNotificationCount = 0;
 
 $(document).ready(function() {
     console.log("Index page is ready");
     connect();
 
-    $("#send").click(function() {
-        sendMessage();
+    $("#globalNotifications").click(function() {
+        resetGlobalNotificationCount();
     });
-
-    $("#send-private").click(function() {
-        sendPrivateMessage();
-    });
-
-    $("#notifications").click(function() {
-        resetNotificationCount();
-    });
+    
 });
 
 function connect() {
@@ -22,53 +15,41 @@ function connect() {
 	 var ws = new WebSocket('ws://localhost:15674/ws');
      var client = Stomp.over(ws);
 	
-    client.connect('guest', 'guest', function (frame) {
+    client.connect('guestclient', 'guestclient', function (frame) {
         console.log('Connected: ' + frame);
-        updateNotificationDisplay();
-        client.subscribe('/topic/messages', function (message) {
-            showMessage(JSON.parse(message.body).content);
+        client.subscribe('/topic/global-notifications', function (globalMessage) {
+			globalNotificationCount = globalNotificationCount + 1;
+            updateGlobalNotificationDisplay();
+            showGlobalMessage(JSON.parse(globalMessage.body).content);
+        });
+        
+         client.subscribe('/topic/messages', function (userMessage) {
+			globalNotificationCount = globalNotificationCount + 1;
+            updateGlobalNotificationDisplay();
+            showUserMessage(JSON.parse(userMessage.body).content);
         });
 
-        client.subscribe('/user/topic/private-messages', function (message) {
-            showMessage(JSON.parse(message.body).content);
-        });
-
-        client.subscribe('/topic/global-notifications', function (message) {
-            notificationCount = notificationCount + 1;
-            updateNotificationDisplay();
-        });
-
-        client.subscribe('/user/topic/private-notifications', function (message) {
-            notificationCount = notificationCount + 1;
-            updateNotificationDisplay();
-        });
     });
 }
 
-function showMessage(message) {
-    $("#messages").append("<tr><td>" + message + "</td></tr>");
+function showGlobalMessage(globalMessage) {
+    $("#globalMessages").append("<tr><td>" + globalMessage + "</td></tr>");
 }
 
-function sendMessage() {
-    console.log("sending message");
-    client.send("/ws/message", {}, JSON.stringify({'messageContent': $("#message").val()}));
+function showUserMessage(userMessage) {
+    $("#globalMessages").append("<tr><td>" + userMessage + "</td></tr>");
 }
 
-function sendPrivateMessage() {
-    console.log("sending private message");
-    client.send("/ws/private-message", {}, JSON.stringify({'messageContent': $("#private-message").val()}));
-}
-
-function updateNotificationDisplay() {
-    if (notificationCount == 0) {
-        $('#notifications').hide();
+function updateGlobalNotificationDisplay() {
+    if (globalNotificationCount == 0) {
+        $('#globalNotifications').text(globalNotificationCount);
     } else {
-        $('#notifications').show();
-        $('#notifications').text(notificationCount);
+        $('#globalNotifications').show();
+        $('#globalNotifications').text(globalNotificationCount);
     }
 }
 
-function resetNotificationCount() {
-    notificationCount = 0;
-    updateNotificationDisplay();
+function resetGlobalNotificationCount() {
+    globalNotificationCount = 0;
+    updateGlobalNotificationDisplay();
 }

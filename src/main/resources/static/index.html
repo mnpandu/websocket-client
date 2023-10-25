@@ -3,21 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Hello WS</title>
-    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="stomp.js"></script>
     <script src="/scripts.js"></script>
+<style>
+table {
+  font-family: Arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr {
+  border: 1px solid #dddddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+</style> 
 </head>
 <body>
     <div class="container" style="margin-top: 50px">
         <div class="row">
             <div class="col-md-12">
-                <table id="message-history" class="table table-striped">
-                    <thead>
+                <table>
                     <tr>
                         <th>Messages
                             <span
-                                    id="notifications"
+                                    id="globalNotifications"
                                     style="
                                     color: white;
                                     background-color: red;
@@ -26,9 +45,9 @@
                             </span>
                         </th>
                     </tr>
-                    </thead>
-                    <tbody id="messages">
-                    </tbody>
+					  <tr>
+					   <td id="globalMessages"</td>
+					  </tr>
                 </table>
             </div>
         </div>
