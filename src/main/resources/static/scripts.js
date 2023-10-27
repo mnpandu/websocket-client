@@ -11,11 +11,9 @@ $(document).ready(function() {
 });
 
 function connect() {
+     var client =  Stomp.client('ws://localhost:61614/ws');
 	
-	 var ws = new WebSocket('ws://localhost:15674/ws');
-     var client = Stomp.over(ws);
-	
-    client.connect('guestclient', 'guestclient', function (frame) {
+    client.connect('admin', 'admin', function (frame) {
         console.log('Connected: ' + frame);
         client.subscribe('/topic/global-notifications', function (globalMessage) {
 			globalNotificationCount = globalNotificationCount + 1;
