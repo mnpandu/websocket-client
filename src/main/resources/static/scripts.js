@@ -23,7 +23,7 @@ function connect() {
             showGlobalMessage(JSON.parse(globalMessage.body).content);
         });
         
-         client.subscribe('/topic/messages', function (userMessage) {
+         client.subscribe('/topic/i2vm-messages', function (userMessage) {
 			globalNotificationCount = globalNotificationCount + 1;
             updateGlobalNotificationDisplay();
             showUserMessage(JSON.parse(userMessage.body).content);
