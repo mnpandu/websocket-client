@@ -1,8 +1,11 @@
 var globalNotificationCount = 0;
+var username = "";
+var userQueue = "";
 
 $(document).ready(function() {
     console.log("Index page is ready");
     connect();
+    getUsername();
 
     $("#globalNotifications").click(function() {
         resetGlobalNotificationCount();
@@ -10,18 +13,30 @@ $(document).ready(function() {
     
 });
 
+function getUsername() {
+        $.get("/username", function (data) {
+			username = data;
+            console.log("Username: " + data); // You can use the username in any way you want
+            // Perform other actions with the username here
+  });
+}
+
 function connect() {
      var client =  Stomp.client('ws://localhost:61614/ws');
      client.connect('admin', 'admin', function (frame) {
         console.log('Connected: ' + frame);
+        updateGlobalNotificationDisplay();
         client.subscribe('/topic/global-notifications', function (globalMessage) {
+			console.log('globalMessage: ' + globalMessage);
 			globalNotificationCount = globalNotificationCount + 1;
             updateGlobalNotificationDisplay();
             showGlobalMessage(JSON.parse(globalMessage.body).content);
         });
-        
-         client.subscribe('/queue/i2vm-messages', function (userMessage) {
-			 console.log('userMessage: ' + userMessage);
+        userQueue='/queue/'+username+'-messages';
+        showusername(username);
+        console.log('userQueue: ' + userQueue);
+         client.subscribe(userQueue, function (userMessage) {
+			console.log('userMessage: ' + userMessage);
 			globalNotificationCount = globalNotificationCount + 1;
             updateGlobalNotificationDisplay();
             showUserMessage(JSON.parse(userMessage.body).content);
@@ -36,6 +51,10 @@ function showGlobalMessage(globalMessage) {
 
 function showUserMessage(userMessage) {
     $("#globalMessages").append("<tr><td>" + userMessage + "</td></tr>");
+}
+
+function showusername(username) {
+    $("#usernameValue").append("<tr><td>" + username + "</td></tr>");
 }
 
 function updateGlobalNotificationDisplay() {
