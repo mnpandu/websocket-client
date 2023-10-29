@@ -11,6 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+
+
 
 @Configuration
 public class SpringSecurityConfig {
@@ -19,14 +22,21 @@ public class SpringSecurityConfig {
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
+    
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) -> {
                     authorize.anyRequest().authenticated();
-                }).httpBasic(Customizer.withDefaults());
+                }).formLogin(Customizer.withDefaults())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/index")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+                    );
         return http.build();
     }
 
