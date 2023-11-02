@@ -21,9 +21,14 @@ function getUsername() {
   });
 }
 
+var headers = {
+    'durable': 'true',
+    'auto-delete': 'false'
+};
+
 function connect() {
-     var client =  Stomp.client('ws://localhost:61614/ws');
-     client.connect('admin', 'admin', function (frame) {
+     var client =  Stomp.client('ws://localhost:15674/ws');
+     client.connect('guestclient', 'guestclient', function (frame) {
         console.log('Connected: ' + frame);
         updateGlobalNotificationDisplay();
         client.subscribe('/topic/global-notifications', function (globalMessage) {
@@ -31,7 +36,7 @@ function connect() {
 			globalNotificationCount = globalNotificationCount + 1;
             updateGlobalNotificationDisplay();
             showGlobalMessage(JSON.parse(globalMessage.body).content);
-        });
+        },headers);
         userQueue='/queue/'+username+'-messages';
         showusername(username);
         console.log('userQueue: ' + userQueue);
