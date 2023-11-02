@@ -23,7 +23,7 @@ function getUsername() {
 
 function connect() {
      var client =  Stomp.client('ws://localhost:61614/ws');
-     client.connect('admin', 'admin', function (frame) {
+     const connectCallback = (frame) => {
         console.log('Connected: ' + frame);
         updateGlobalNotificationDisplay();
         client.subscribe('/topic/global-notifications', function (globalMessage) {
@@ -42,7 +42,17 @@ function connect() {
             showUserMessage(JSON.parse(userMessage.body).content);
         });
 
-    });
+    };
+    
+    const errorCallback = (error) => {
+        console.error('Error: ', error);
+        setTimeout(() => {
+            console.log('Attempting to reconnect...');
+            connect();
+        }, 5000); // 5 seconds
+    };
+    
+    client.connect('admin', 'admin', connectCallback, errorCallback);
 }
 
 function showGlobalMessage(globalMessage) {
