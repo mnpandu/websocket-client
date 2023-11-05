@@ -1,6 +1,7 @@
 var globalNotificationCount = 0;
 var username = "";
 var userQueue = "";
+var userWildQueue = "";
 
 $(document).ready(function() {
     console.log("Index page is ready");
@@ -26,7 +27,8 @@ function connect() {
      const connectCallback = (frame) => {
         console.log('Connected: ' + frame);
         updateGlobalNotificationDisplay();
-        client.subscribe('/topic/global-notifications', function (globalMessage) {
+        userWildQueue='/queue/Consumer.'+username+'.VirtualTopic.global-notifications';
+        client.subscribe(userWildQueue, function (globalMessage) {
 			console.log('globalMessage: ' + globalMessage);
 			globalNotificationCount = globalNotificationCount + 1;
             updateGlobalNotificationDisplay();

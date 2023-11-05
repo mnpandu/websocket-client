@@ -55,12 +55,12 @@ public class SpringSecurityConfig {
                 .roles("USER")
                 .build();
 
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin"))
+        UserDetails rohit = User.builder()
+                .username("rohit")
+                .password(passwordEncoder().encode("password"))
                 .roles("ADMIN")
                 .build();
 
-        return new InMemoryUserDetailsManager(pandu,rajesh, admin);
+        return new InMemoryUserDetailsManager(pandu,rajesh, rohit);
     }
 }
